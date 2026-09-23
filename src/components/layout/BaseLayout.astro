@@ -156,13 +156,22 @@ const privacyLabel = consent?.privacyLabel ?? footerStrings.privacyPolicy ?? 'Pr
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {/* pnpm gen-assets regenerates these in place with the live brand color.
-        SVG first (sharp modern browsers), 32px PNG fallback; the legacy
-        favicon.ico stays in public/ but is never referenced (sharp can't
-        emit ICO — see scripts/gen-assets.ts). */}
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {/* PNG-only on purpose. The site icon is a traced character illustration —
+        as SVG it is ~1.4MB (269KB minified) for something that renders at
+        16-32px, and the favicon is requested on every page load. The source
+        vector lives at src/assets/brand/favicon-source.svg; regenerate the
+        PNGs from it rather than linking it here.
+
+        The ?v= query is a favicon cache key: Chrome stores favicons in a
+        separate database that a hard reload does NOT clear, so bump it
+        whenever the icon art changes.
+
+        The legacy favicon.ico stays in public/ but is never referenced
+        (sharp can't emit ICO — see scripts/gen-assets.ts). NOTE: pnpm
+        gen-assets overwrites this whole icon set with a generated
+        brand-color square. */}
+    <link rel="icon" href="/favicon-32x32.png?v=2" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
     <meta name="generator" content={Astro.generator} />

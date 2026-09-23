@@ -64,12 +64,16 @@ for (const file of htmlFiles) {
   let m: RegExpExecArray | null;
   while ((m = HREF_RE.exec(src)) !== null) {
     const href = m[1];
-    // Skip asset-like and non-page links.
-    if (/\.(png|jpe?g|webp|svg|gif|ico|css|js|mjs|json|xml|txt|webmanifest|woff2?|avif)$/i.test(href))
-      continue;
     if (href.startsWith('//')) continue;
-    checked++;
+    // Strip the hash/query BEFORE the asset test: an href like
+    // "/favicon-32x32.png?v=2" (favicon cache-buster, see BaseLayout) ends in
+    // "2", not ".png", so testing the raw href would treat it as a page and
+    // report it broken.
     const clean = href.split('#')[0].split('?')[0];
+    // Skip asset-like and non-page links.
+    if (/\.(png|jpe?g|webp|svg|gif|ico|css|js|mjs|json|xml|txt|webmanifest|woff2?|avif)$/i.test(clean))
+      continue;
+    checked++;
     if (clean === '' || clean === '/') continue;
     if (!knownPaths.has(clean.replace(/\/$/, ''))) {
       const list = broken.get(href) ?? [];
